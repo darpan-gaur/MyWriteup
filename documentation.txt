@@ -1,0 +1,18 @@
+https://reactrouter.com/en/main/start/tutorial
+yarn add react-router-dom
+
+// scss
+yarn add sass
+
+https://github.com/zenoamaro/react-quill
+yarn add react-quill
+
+// Backend
+Initialize :- npm init -y
+
+yarn add express mysql nodemon
+
+https://www.npmjs.com/package/bcryptjs
+
+// for api
+yarn add axios
