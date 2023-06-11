@@ -16,3 +16,12 @@ https://www.npmjs.com/package/bcryptjs
 
 // for api
 yarn add axios
+
+// server proxy
+https://vitejs.dev/config/server-options.html#server-proxy
+
+// security
+yarn add jsonwebtoken
+
+// cookie
+yarn add cookie-parser

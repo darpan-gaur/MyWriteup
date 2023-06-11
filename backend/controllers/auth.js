@@ -1,36 +1,53 @@
 import {db} from "../db.js"
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export const register = (req, res) => {
     // Check if user already exists
     const q = "SELECT * FROM users WHERE email = ? OR username = ?";
+  
+    db.query(q, [req.body.email, req.body.username], (err, data) => {
+      if (err) return res.status(500).json(err);
+      if (data.length) return res.status(409).json("User already exists!");
+  
+      //Hash the password and create a user
+      const salt = bcrypt.genSaltSync(10);
+      const hash = bcrypt.hashSync(req.body.password, salt);
+  
+      const q = "INSERT INTO users(`username`,`email`,`password`) VALUES (?)";
+      const values = [req.body.username, req.body.email, hash];
+  
+      db.query(q, [values], (err, data) => {
+        if (err) return res.status(500).json(err);
+        return res.status(200).json("User has been created.");
+      });
+    });
+  };
 
-    db.query(q, [req.body.email, req.body.username], (err, result) => {
-        if (err) return res.json(err);
-        if (data.length) return res.status(409).json("User already exists");
+export const login = (req, res) => {
+    // Check if user exists
+    const q = "SELECT * FROM users WHERE username = ?";
 
-        // Hash the password and create a user
-        const salt = bcrypt.genSaltSync(10);
-        const hash = bcrypt.hashSync(req.body.password, salt);
+    db.query(q, [req.body.username], (err, data) => {
+      if (err) return res.json(err);
+      if (data.length === 0) return res.status(404).json("User not found!");
 
-        const q = "INSERT INTO users (`username`, `email`, `password`) VALUES (?)";
-        const values = [
-            req.body.username,
-            req.body.email,
-            hash
-        ]
+      // Check if password is correct
+      const isPasswordCorrect = bcrypt.compareSync(req.body.password, data[0].password);
 
-        db.query(q, [values], (err, data) => {
-            if (err) return res.json(err);
-            return res.status(200).json("User created successfully");
-        })
+      if (!isPasswordCorrect) return res.status(400).json("Invalid Credentials !");
+
+      // Create a token
+      const token = jwt.sign({ id: data[0].id }, "jwtkey" );  // try env method 
+      const {password, ...other} = data[0];  // remove password from data
+
+      // Send the token in a HTTP-only cookie
+      res.cookie("access_token", token, {
+        httpOnly: true,   // script in brower cannot access this cookie
+      }).status(200).json(other);
     });
 }
 
-export const login = (req, res) => {
-    res.send("register");
-}
-
 export const logout = (req, res) => {
-    res.send("register");
+    res.send("logout");
 }
