@@ -7,6 +7,8 @@ yarn add sass
 https://github.com/zenoamaro/react-quill
 yarn add react-quill
 
+yarn add moment
+
 // Backend
 Initialize :- npm init -y
 
@@ -25,3 +27,7 @@ yarn add jsonwebtoken
 
 // cookie
 yarn add cookie-parser
+
+// for uploading files locally
+https://www.npmjs.com/package/multer
+yarn add multer
